@@ -6,7 +6,6 @@ from flask import *
 import json
 import requests
 import hashlib
-import sys
 from cryptography.fernet import Fernet
 
 app = Flask(__name__)
@@ -21,7 +20,7 @@ def encrypt(key,mess):
 def index():
     return 'Please Authenticate Yourself'
 
-@app.route('/authenticate', methods=['POST'])
+@app.route('/authenticate', methods=["POST"])
 def authenticate():
    username = request.form['username']
    password = request.form['password']
@@ -30,7 +29,8 @@ def authenticate():
 #   req = requests.post('http://192.168.202.45:8080/token.php', data=data, auth=authen)
    req = ''
    if req == '':
-      return jsonify(auth='fail',token='')
+       return 'ok'
+
    if req.status_code == 400:
       return jsonify(auth='fail', token='')
    res = req.json()
@@ -43,8 +43,8 @@ def authenticate():
       encryptPassw = encrypt(newRes, passKey)
       return jsonify(res=encryptPassw)
    else:
-      return false
+      return 'segfault'
 
 if __name__ == '__main__':
    app.config['TEMPLATES_AUTO_RELOAD'] = True
-   app.run('192.168.206.35',port=5000,debug=True)
+   app.run('0.0.0.0',port=80,debug=True)

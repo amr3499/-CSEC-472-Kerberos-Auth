@@ -26,9 +26,22 @@ def authenticate():
    username = request.form['username']
    password = request.form['password']
    data = {'username': username, 'password': password}
-   req = requests.post('http://192.168.206.35:5000/authenticate', data=data)
-   return req
+   req = requests.post('http://192.168.206.35/authenticate', data=data)
+   #res = req.json()
+   res = ''
+   if 'auth' in res and res['auth'] == 'fail': 
+       return 'Credentials != good'
+   elif 'res' in res:
+       passw = hashlib.sha256()
+       passw.update(bytes(password,'utf-8'))
+       passKey = passw.digest()
+       res = json.loads(decrypt(secret_key,res['res']))
+       token = res['token']
+       req = requests.post('http://192.168.205.254',json={'token': token})
+       return req.text
+   else:
+       return 'segfault'
 
 if __name__ == '__main__':
    app.config['TEMPLATES_AUTO_RELOAD'] = True
-   app.run('192.168.206.35',port=80,debug=True)
+   app.run('0.0.0.0',port=8080,debug=True)
